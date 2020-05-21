@@ -49,16 +49,16 @@ def main():
     public_key = RSA.importKey(public_key_string)
     cipher = PKCS1_OAEP.new(public_key)
 
-    message = json.dumps({'key': shared_key, 'iv': iv}).encode('utf-8')
-    encrypted_message = base64.b64encode(
-        cipher.encrypt(message)
+    authorization = json.dumps({'key': shared_key, 'iv': iv}).encode('utf-8')
+    encrypted_authorization = base64.b64encode(
+        cipher.encrypt(authorization)
     ).decode('utf-8')
 
     print('[*] Sending request to get status\n')
     response = requests.request(
-        'POST',
+        'GET',
         "{}/port/status".format(host_address),
-        data = { 'data': encrypted_message }
+        headers = { 'Authorization': encrypted_authorization }
     )
 
     print('[*] Received response from getting status\n')

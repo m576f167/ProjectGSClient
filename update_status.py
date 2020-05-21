@@ -53,14 +53,24 @@ def main():
     public_key = RSA.importKey(public_key_string)
     cipher = PKCS1_OAEP.new(public_key)
 
-    message = json.dumps(
+    authorization = json.dumps(
         {
             'key': shared_key,
             'iv': iv,
-            'port': port,
-            'secret': secret,
+            'secret': secret
         }
     ).encode('utf-8')
+
+    encrypted_authorization = base64.b64encode(
+        cipher.encrypt(authorization)
+    ).decode('utf-8')
+
+    message = json.dumps(
+        {
+            'port': port
+        }
+    ).encode('utf-8')
+
     encrypted_message = base64.b64encode(
         cipher.encrypt(message)
     ).decode('utf-8')
@@ -69,6 +79,7 @@ def main():
     response = requests.request(
         'POST',
         "{}/port/update".format(host_address),
+        headers = { 'Authorization': encrypted_authorization },
         data = { 'data': encrypted_message }
     )
 
