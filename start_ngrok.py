@@ -63,7 +63,7 @@ def main():
                 '-i', identity_file,
                 '-o', 'StrictHostKeyChecking=no',
                 "{}@{}".format(ssh_user, ssh_host),
-                'bash', '-c', 'sleep 1 & exit'
+                'sleep 1'
             ],
             stdout = subprocess.PIPE
         )
